@@ -15,21 +15,78 @@ var http = require('http');
 var express = require('express')
 var app = express();
 
+// Declare a inputsFromDb
+var inputsFromDb={};
+
 
 
 // Include the jsforce package 
 var jsforce = require('jsforce');
 
+
+/** Insert all the static inputs
+    in MongoDb
+ **/
+ // Include all the packages required for MongoDb
+ var mongoose = require('mongoose');
+ mongoose.connect('mongodb://localhost/27017');
+ var db = mongoose.connection;
+ 
+ // If there is an error in the connection,console the same
+ db.on('error', console.error.bind(console, 'connection error:'));
+ 
+ // Once the connection is established
+ db.once('open', function() {
+   // Create a schema for inputs
+   var inputsSchema = mongoose.Schema({
+                      loginUrl     : String,
+                      clientId     : String,
+                      clientSecret : String,
+                      redirectUri  : String,
+                      userName     : String,
+                      password     : String
+
+  });
+  
+  var inputs = mongoose.model('inputs', inputsSchema);
+  
+  // Insert the static inputs
+  var input = new inputs({
+                  loginUrl    :"https://login.salesforce.com",
+                  clientId    : "3MVG9i1HRpGLXp.qcWt66xy9NSh6DuRCzjRetpKK.0qC9VobxcxY5xsuRfzuGk7dsTfl0OuSMEOHvFMQpwtoG ",
+                  clientSecret: "564223176942651198",
+                  redirectUri : 'https://localhost:3000/oauth2/callbacks',
+                  userName    : 'mani@appsbrew.com',
+                  password    : 'Welcome123'
+				  
+   });
+
+   //Saving the model instance to the DB
+   input.save(function(err){
+    if ( err ) throw err;
+  
+    // Once the input is saved
+    // get the user mani@appsbrew.com
+    inputs.findOne({ userName: 'mani@appsbrew.com' }, function(err, row) {
+                                                     if (err) throw err;
+                                                     // Assign the query result to inputsFromDb
+													 inputsFromDb = row;
+                                                     console.log(inputsFromDb);
+    });
+  });
+});
+
+
 // Prepare the oauth2 object
 var oauth2 = new jsforce.OAuth2({
-  loginUrl : 'https://login.salesforce.com',
+  loginUrl : inputsFromDb.loginUrl,
   // Client-id,clientSecret is provided during app connfiguration
-  clientId : '3MVG9i1HRpGLXp.qcWt66xy9NSh6DuRCzjRetpKK.0qC9VobxcxY5xsuRfzuGk7dsTfl0OuSMEOHvFMQpwtoG ',
-  clientSecret : '564223176942651198',
+  clientId : inputsFromDb.clientId,
+  clientSecret : inputsFromDb.clientSecret,
   // redirectUri is the url that must be given,
   // so that after login,we get redirected to this url and 
   // query accordingly
-  redirectUri : 'https://localhost:3000/oauth2/callbacks'
+  redirectUri : inputsFromDb.redirectUri
 });
 
 
@@ -52,7 +109,7 @@ conn.instanceUrl="https://test.salesforce.com"+conn.instanceUrl;
 
 
 // Provide the user credentials and perform login
-conn.login("mani@appsbrew.com", "Welcome123", function(err, userInfo) {
+conn.login("mani@appsbrew.com", "Welcome123Z3qaZ1Ykz6UeHxjoaXFDRQFPW", function(err, userInfo) {
   if (err) { return console.error(err); }
   // Now you can get the access token and instance URL information.
   // Save them to establish connection next time.
