@@ -81,64 +81,6 @@ app.set('view engine', 'ejs');
   });
 });
 
-
-// Prepare the oauth2 object
-var oauth2 = new jsforce.OAuth2({
-  loginUrl : inputsFromDb.loginUrl,
-  // Client-id,clientSecret is provided during app connfiguration
-  clientId : inputsFromDb.clientId,
-  clientSecret : inputsFromDb.clientSecret,
-  // redirectUri is the url that must be given,
-  // so that after login,we get redirected to this url and 
-  // query accordingly
-  redirectUri : inputsFromDb.redirectUri
-});
-
-
-// Refreshtoken method
-oauth2.refreshToken(oauth2.refreshToken).then(function(ret) {
-  var conn = new jsforce.Connection({
-     accessToken: ret.access_token,
-     instanceUrl: ret.instance_url
-  });
-});
-
-/** Establish oauth2 connection **/
-var conn = new jsforce.Connection({
-  oauth2 :oauth2
-});
-
-// The instanceUrl must be concatenated to "https://test.salesforce.com",
-// to obtain the correct URL
-conn.instanceUrl="https://test.salesforce.com"+conn.instanceUrl;
-
-
-// Provide the user credentials and perform login
-conn.login("mani@appsbrew.com", "Welcome123Z3qaZ1Ykz6UeHxjoaXFDRQFPW", function(err, userInfo) {
-  if (err) { return console.error(err); }
-  // Now you can get the access token and instance URL information.
-  // Save them to establish connection next time.
-  console.log(conn.accessToken);
-  console.log(conn.instanceUrl);
-  // logged in user property
-  console.log("User ID: " + userInfo.id);
-  console.log("Org ID: " + userInfo.organizationId);
-  // ...
-});
-
-
-// /oauth2/callback is the redirectUri,i.e,
-// after log-in,we get redirected to this uri 
-// so that we can query
-app.get('/oauth2/callback', function (req, res) {
-  var records = [];
-  conn.query("SELECT Id, Name FROM Account", function(err, result) {
-    if (err) { return console.error(err); }
-    console.log("total : " + result.totalSize);
-    console.log("fetched : " + result.records.length);
-  });
-});
-
 // Connection
 app.get('/connection', function (req, res)
 {
@@ -147,7 +89,7 @@ app.get('/connection', function (req, res)
 
 // Create a http server and listen to port-3000
 http.createServer(app).listen(8000, "0.0.0.0", function(){
-  console.log('Express server listening on port ' + 3000);
+  console.log('Express server listening on port ' + 8000);
 });
 
 
