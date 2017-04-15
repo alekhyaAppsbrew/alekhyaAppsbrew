@@ -23,6 +23,11 @@ var inputsFromDb={};
 // Include the jsforce package 
 var jsforce = require('jsforce');
 
+// specify the folder for views
+app.set('views', __dirname + '/views');
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'ejs');
+
 
 /** Insert all the static inputs
     in MongoDb
@@ -134,8 +139,14 @@ app.get('/oauth2/callback', function (req, res) {
   });
 });
 
+// Connection
+app.get('/connection', function (req, res)
+{
+    res.render('connection.html');
+});
+
 // Create a http server and listen to port-3000
-http.createServer(app).listen(3000, "0.0.0.0", function(){
+http.createServer(app).listen(8000, "0.0.0.0", function(){
   console.log('Express server listening on port ' + 3000);
 });
 

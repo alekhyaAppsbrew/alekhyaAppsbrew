@@ -1,0 +1,23 @@
+<html>
+   <head>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>
+	 <script>
+	   alert("Connection");
+	   jsforce.browser.init({
+	        clientId: '3MVG9A2kN3Bn17hv5Z.MnUUfJRTgrq0KwgysLOXrljNJ1JB6HijwsXoNi8Imxvwi3b6pknYch_sU771SM1lTh',
+			redirectUri: 'https://jsforce.github.io/callback.html',
+			proxyUrl: 'https://safe-stream-17926.herokuapp.com/proxy/'
+		});
+		
+		// Login URL
+		jsforce.browser.login();
+		
+        jsforce.browser.on('connect', function(conn) {		
+		                                alert(conn);
+										});
+	  </script>									
+   </head>
+   <body>
+     <p>Connection.html</p>
+   </body>
+ </html>
