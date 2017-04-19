@@ -130,11 +130,12 @@ app.post('/inputsFromRegisteration', function (req, res)
       if(err) {
         return console.error('error running query', err);
       }
-    console.log(result.rows[0].theTime);
-    //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
-    client.end();
+      console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
   });
-});
+  res.render('connection.html');
 });
 
 // Create a http server and listen to port-3000
