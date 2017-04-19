@@ -15,6 +15,9 @@ var http = require('http');
 var express = require('express')
 var app = express();
 
+// Include Body-Parser
+var bodyParser = require('body-parser');
+
 // Declare a inputsFromDb
 var inputsFromDb={};
 
@@ -27,6 +30,14 @@ var jsforce = require('jsforce');
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
+
+
+// Path for css
+app.use(express.static(__dirname + '/views'));
+
+// Add body-parser 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 
 /** Insert all the static inputs
@@ -85,6 +96,45 @@ app.set('view engine', 'ejs');
 app.get('/connection', function (req, res)
 {
     res.render('connection.html');
+});
+
+// callback
+app.get('/callback', function (req, res)
+{
+    res.render('callback.html');
+});
+
+// registration
+app.get('/registration', function (req, res)
+{
+    res.render('index2.html');
+});
+
+// Inputs from registeration
+app.post('/inputsFromRegisteration', function (req, res)
+{
+    console.log(req.body);
+	// instance,usernamesignup,emailsignup
+	var pg = require('pg');
+    //or native libpq bindings
+    //var pg = require('pg').native
+
+    var conString = process.env.ELEPHANTSQL_URL || "postgres://zzlbzdoi:zfQnIJMTForgzLtojNWFkbVK05iuVpxx@stampy.db.elephantsql.com:5432/zzlbzdoi";
+
+    var client = new pg.Client(conString);
+    client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT NOW() AS "theTime"', function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+    console.log(result.rows[0].theTime);
+    //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+    client.end();
+  });
+});
 });
 
 // Create a http server and listen to port-3000

@@ -9,15 +9,13 @@
 			proxyUrl: 'https://safe-stream-17926.herokuapp.com/proxy/'
 		});
 		
-		// Login URL
-		jsforce.browser.login();
 		
-        jsforce.browser.on('connect', function(conn) {		
-		                                alert(conn);
+		jsforce.browser.on('connect', function(conn) {		
+		                                alert(conn.accessToken);
 										});
 	  </script>									
    </head>
    <body>
-     <p>Connection.html</p>
+     <p>CallBack.html</p>
    </body>
  </html>
