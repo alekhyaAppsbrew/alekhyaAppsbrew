@@ -104,6 +104,12 @@ app.get('/callback', function (req, res)
     res.render('callback.html');
 });
 
+// userDb
+app.post('/userDb', function (req, res)
+{
+    console.log("In userDb");
+});
+
 // registration
 app.get('/registration', function (req, res)
 {
@@ -113,6 +119,20 @@ app.get('/registration', function (req, res)
 // Inputs from registeration
 app.post('/inputsFromRegisteration', function (req, res)
 {
+ 
+    //res.writeHead(200, {'Content-Type': 'text/html'});
+
+    // Check for SF instance	
+	if(req.body.instance=="production")
+	{
+		console.log("Production")
+        res.render('connection.html');
+	}
+	else if(req.body.instance=="test")
+	{
+		console.log("Test")
+		res.render('connection.html');
+	}
     console.log(req.body);
 	// instance,usernamesignup,emailsignup
 	var pg = require('pg');
@@ -135,11 +155,12 @@ app.post('/inputsFromRegisteration', function (req, res)
       client.end();
     });
   });
-  res.render('connection.html');
+  
 });
 
 // Create a http server and listen to port-3000
 http.createServer(app).listen(8000, "0.0.0.0", function(){
+	
   console.log('Express server listening on port ' + 8000);
 });
 

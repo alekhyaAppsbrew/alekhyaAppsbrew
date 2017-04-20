@@ -1,18 +1,33 @@
 <html>
    <head>
      <script src="//cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>
+	 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	 <script>
-	   alert("Connection");
 	   jsforce.browser.init({
 	        clientId: '3MVG9d8..z.hDcPK7_xOrrNj8vcabo1_1JaJOE6QmwDMhRoUKliFQpVdlZqHFDGTX42YSa9NgrExlAhj9ekaK',
 			redirectUri: 'http://localhost:8000/callback',
 			proxyUrl: 'https://safe-stream-17926.herokuapp.com/proxy/'
 		});
 		
-		
+	 $(document).ready(function() {
 		jsforce.browser.on('connect', function(conn) {		
-		                                alert(conn.accessToken);
-										});
+		                                                    alert("Connection");
+		                                					$.ajax({
+						                                        type: 'POST',
+																data: JSON.stringify(conn),
+																contentType: 'application/json',
+																url: 'http://localhost:8000/userDb',						
+																success: function(data) {
+																	console.log('success');
+																	console.log(JSON.stringify(data));
+																},
+																error: function (xhr, status, error) {
+																	console.log('Error: ' + error.message);
+																}
+                                                           });
+										
+						                             });
+									});				 
 	  </script>									
    </head>
    <body>
