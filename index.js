@@ -21,6 +21,15 @@ var bodyParser = require('body-parser');
 // Declare a inputsFromDb
 var inputsFromDb={};
 
+// User Details
+var id;
+var app;
+var instanceName;
+var instanceType;
+var instanceUrl;
+var acessToken;
+var refreshToken;
+
 
 
 // Include the jsforce package 
@@ -107,8 +116,72 @@ app.get('/callback', function (req, res)
 // userDb
 app.post('/userDb', function (req, res)
 {
-    console.log("In userDb");
-});
+	var object=req.body;
+	console.log(req.body.refreshToken+"refreshToken");
+	acessToken=object.accessToken;
+	refreshToken=object.refreshToken;
+	instanceUrl=object.instanceUrl;
+    // Insert the user details in PostgressDb
+	// instance,usernamesignup,emailsignup
+	var pg = require('pg');
+    //or native libpq bindings
+    //var pg = require('pg').native
+	
+	
+	/**
+	   var id;
+var app;
+var instanceName;
+var instanceType;
+var instanceUrl;
+var acessToken;
+var refreshToken;
+	
+	**/
+
+    var conString = process.env.ELEPHANTSQL_URL || "postgres://zzlbzdoi:zfQnIJMTForgzLtojNWFkbVK05iuVpxx@stampy.db.elephantsql.com:5432/zzlbzdoi";
+
+    var client = new pg.Client(conString);
+	var client = new pg.Client(conString);
+    client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    //client.query('INSERT into InstanceRegistration (id, Application, Instance_Name,Instance_Type,instance_URL,Access_Token,Refresh_Token) VALUES(id, app, instanceName,instanceType,instanceUrl,acessToken,refreshToken)', function(err, result) {
+      /**CREATE TABLE InstanceRegistration(
+   id VARCHAR UNIQUE NOT NULL,
+   Application VARCHAR    NOT NULL,
+   Instance_Name  VARCHAR  UNIQUE   NOT NULL,
+   Instance_Type VARCHAR        ,
+   instance_URL   VARCHAR  ,
+    Access_Token  VARCHAR,
+   Refresh_Token VARCHAR
+)**/
+    client.query('CREATE TABLE IF NOT EXISTS InstanceRegistration1(id VARCHAR(50) UNIQUE NOT NULL,Application VARCHAR(50) NOT NULL,Instance_Name  VARCHAR(50)  UNIQUE   NOT NULL,Instance_Type VARCHAR(50),instance_URL   VARCHAR(50) ,Access_Token  VARCHAR(50),Refresh_Token VARCHAR(50))', function(err, result) {
+	  if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Table Created");
+	  var queryString='INSERT into InstanceRegistration1 (id, Application, Instance_Name,Instance_Type,instance_URL,Access_Token,Refresh_Token) VALUES('+"'"+id+"','"+ app+"','"+ instanceName+"','"+instanceType+"','"+instanceUrl+"','"+acessToken+"','"+refreshToken+"')";
+	  console.log(queryString+"queryString");
+	 /** client.query(queryString, function(err, result) {
+		 
+		     if(err) {
+               return console.error('error running query', err);
+             }
+			  console.log("Row inserted");
+			  client.end();
+			  
+		  
+	    
+	  });**/
+      
+    });
+  });
+	
+	
+	
+});	
 
 // registration
 app.get('/registration', function (req, res)
@@ -121,15 +194,24 @@ app.post('/inputsFromRegisteration', function (req, res)
 {
  
     //res.writeHead(200, {'Content-Type': 'text/html'});
+	
+	id=req.body.emailsignup;
+	app="SFDC";
+	instanceName=req.body.usernamesignup;
+	
+	
 
     // Check for SF instance	
 	if(req.body.instance=="production")
 	{
-		console.log("Production")
+		instanceType="production";
+		console.log("Production");
+		
         res.render('connection.html');
 	}
 	else if(req.body.instance=="test")
 	{
+		instanceType="test" ;
 		console.log("Test")
 		res.render('connection.html');
 	}

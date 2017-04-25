@@ -1,7 +1,7 @@
 <html>
-   <head>
+   <body>
      <script src="//cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>
-	 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	 <script>
 	   jsforce.browser.init({
 	        clientId: '3MVG9d8..z.hDcPK7_xOrrNj8vcabo1_1JaJOE6QmwDMhRoUKliFQpVdlZqHFDGTX42YSa9NgrExlAhj9ekaK',
@@ -9,28 +9,43 @@
 			proxyUrl: 'https://safe-stream-17926.herokuapp.com/proxy/'
 		});
 		
-	 $(document).ready(function() {
 		jsforce.browser.on('connect', function(conn) {		
-		                                                    alert("Connection");
+		                                                   alert(conn.refreshToken+"refreshToken");
+														   var dataString = 'accessToken='+conn.accessToken+'&refreshToken='+conn.refreshToken+'&instanceUrl='+conn.instanceUrl;
+
 		                                					$.ajax({
-						                                        type: 'POST',
-																data: JSON.stringify(conn),
-																contentType: 'application/json',
-																url: 'http://localhost:8000/userDb',						
-																success: function(data) {
-																	console.log('success');
-																	console.log(JSON.stringify(data));
-																},
-																error: function (xhr, status, error) {
-																	console.log('Error: ' + error.message);
-																}
-                                                           });
+    
+																	async       : true,
+																	type        : 'POST',
+																	url         : 'http://localhost:8000/userDb',
+																	data        : dataString,
+
+																	// If the POST is success
+																	success     :function(response){
+																				  alert(response);
+																				  if(response){
+																				  alert(" success");
+																				  }
+																				  
+																				  else {
+																				  alert(" failed");
+																				  }
+																				 },
+
+																	// If the POST is not working
+																	error       :function (xhr, status, error) 
+																				 {
+																				   alert('Error: ' + error);
+
+																				 }
+																			
+
+																   });
 										
-						                             });
-									});				 
-	  </script>									
-   </head>
-   <body>
+						                            });
+											 
+	 </script>									
      <p>CallBack.html</p>
-   </body>
+	 </body>
+
  </html>
